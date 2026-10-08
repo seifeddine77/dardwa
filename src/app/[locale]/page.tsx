@@ -3,8 +3,8 @@ import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { DisclaimerNotice } from "@/components/medicine/DisclaimerNotice";
+import { MedicineAutocomplete } from "@/components/search/MedicineAutocomplete";
 import {
-  Search,
   HeartPulse,
   Coins,
   ShieldCheck,
@@ -49,29 +49,11 @@ function HomeContent({ locale }: { locale: string }) {
             {t("heroSubtitle")}
           </p>
 
-          {/* Search Bar Placeholder (Instant Search in Milestone b) */}
-          <div className="max-w-2xl mx-auto pt-2">
-            <form
-              action={`/${locale}/medicines`}
-              method="GET"
-              className="relative flex items-center shadow-lg rounded-2xl bg-white border-2 border-emerald-500/20 focus-within:border-emerald-500 transition-all p-2"
-            >
-              <Search className="h-6 w-6 text-emerald-600 ms-3 shrink-0" />
-              <input
-                type="text"
-                name="q"
-                placeholder={tCommon("searchPlaceholder")}
-                className="w-full px-4 py-3 text-base text-slate-900 bg-transparent placeholder-slate-400 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-md shadow-emerald-600/20 shrink-0"
-              >
-                <span>{tCommon("search")}</span>
-              </button>
-            </form>
-            <p className="text-xs text-slate-500 mt-2 text-start ms-4">
-              Recherchez par nom commercial (Doliprane) ou DCI (Paracétamol)
+          {/* Instant Typo-Tolerant Autocomplete Search */}
+          <div className="pt-2">
+            <MedicineAutocomplete autoFocus />
+            <p className="text-xs text-slate-500 mt-2.5 text-center">
+              Recherchez par nom commercial (ex: <span className="font-semibold text-slate-700">Doliprane</span>) ou DCI (ex: <span className="font-semibold text-slate-700">Paracétamol</span>, <span className="font-semibold text-slate-700">أموكسيسيلين</span>)
             </p>
           </div>
 
