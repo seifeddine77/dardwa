@@ -1,0 +1,8 @@
+code,brand_name,brand_name_ar,dci,dosage,form,public_price_tnd,is_generic,cnam_covered
+PCT-101,DOLIPRANE 1000,دوليبران 1000,PARACETAMOL,1000 mg,Comprimé,4.850,false,true
+PCT-102,PARALYOC 1000,باراليوك 1000,PARACETAMOL,1000 mg,Comprimé,3.100,true,true
+PCT-103,ALGODOL 1000,الغولودول 1000,PARACETAMOL,1000 mg,Comprimé,2.750,true,true
+PCT-104,CLAMOXYL 1g,كلاموكسيل 1غ,AMOXICILLINE,1 g,Comprimé dispersible,9.400,false,true
+PCT-105,AMOXIL 1g,أموكسيل 1غ,AMOXICILLINE,1 g,Comprimé dispersible,6.200,true,true
+PCT-106,SPASFON 80mg,سباسفون 80 مغ,PHLOROGLUCINOL,80 mg,Comprimé,5.150,false,true
+PCT-107,SPASMOREST 80mg,سباسموريست 80 مغ,PHLOROGLUCINOL,80 mg,Comprimé,3.400,true,true
