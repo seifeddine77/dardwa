@@ -5,6 +5,10 @@ import { ReportFormModal } from "@/components/report/ReportFormModal";
 import { DisclaimerNotice } from "@/components/medicine/DisclaimerNotice";
 import { HeartHandshake, ShieldCheck, Clock, Users } from "lucide-react";
 
+import { getAllMedicines, getAllPharmacies } from "@/lib/data/repository";
+
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Signaler la Disponibilité d'un Médicament en Pharmacie",
   description:
@@ -18,6 +22,11 @@ interface ReportPageProps {
 export default async function ReportPage({ params }: ReportPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const [medicines, pharmacies] = await Promise.all([
+    getAllMedicines(),
+    getAllPharmacies(),
+  ]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -85,7 +94,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
       </div>
 
       {/* Submission Form Modal/Card */}
-      <ReportFormModal locale={locale} />
+      <ReportFormModal
+        locale={locale}
+        medicines={medicines}
+        pharmacies={pharmacies}
+      />
 
       {/* Medical Disclaimer */}
       <div className="max-w-2xl mx-auto">

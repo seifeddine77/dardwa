@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { Link } from "@/i18n/routing";
-import { SEED_MEDICINES } from "@/lib/data/mock-dataset";
+import {
+  getMedicineById,
+  getAllMedicines,
+  getActiveReports,
+  getAllPharmacies,
+} from "@/lib/data/repository";
 import {
   findCheaperEquivalents,
   formatTndPrice,
@@ -11,6 +16,7 @@ import {
 import { DisclaimerNotice } from "@/components/medicine/DisclaimerNotice";
 import { EquivalentCard } from "@/components/medicine/EquivalentCard";
 import { JsonLdDrug } from "@/components/medicine/JsonLdDrug";
+import { MedicineAvailabilitySection } from "@/components/medicine/MedicineAvailabilitySection";
 import {
   Pill,
   CheckCircle,
@@ -25,28 +31,17 @@ import {
   ShieldAlert,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 interface MedicineDetailPageProps {
   params: Promise<{ locale: string; id: string }>;
-}
-
-export async function generateStaticParams() {
-  const params: Array<{ locale: string; id: string }> = [];
-  const locales = ["fr", "ar"];
-
-  for (const locale of locales) {
-    for (const med of SEED_MEDICINES) {
-      params.push({ locale, id: med.id });
-    }
-  }
-
-  return params;
 }
 
 export async function generateMetadata({
   params,
 }: MedicineDetailPageProps): Promise<Metadata> {
   const { locale, id } = await params;
-  const medicine = SEED_MEDICINES.find((m) => m.id === id);
+  const medicine = await getMedicineById(id);
 
   if (!medicine) {
     return { title: "Médicament introuvable" };
@@ -82,7 +77,13 @@ export default async function MedicineDetailPage({
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const medicine = SEED_MEDICINES.find((m) => m.id === id);
+  const [medicine, allMedicines, reports, pharmacies] = await Promise.all([
+    getMedicineById(id),
+    getAllMedicines(),
+    getActiveReports({ medicineId: id, moderationStatus: "approved" }),
+    getAllPharmacies(),
+  ]);
+
   if (!medicine) {
     notFound();
   }
@@ -90,8 +91,8 @@ export default async function MedicineDetailPage({
   const isRtl = locale === "ar";
   const ArrowIcon = isRtl ? ArrowRight : ArrowLeft;
 
-  // Compute cheaper equivalents
-  const cheaperEquivalents = findCheaperEquivalents(medicine, SEED_MEDICINES);
+  // Compute cheaper equivalents from dynamic catalog
+  const cheaperEquivalents = findCheaperEquivalents(medicine, allMedicines);
   const dciNames = medicine.ingredients
     .map((i) => (locale === "ar" && i.nameAr ? i.nameAr : i.name))
     .join(" + ");
@@ -212,6 +213,15 @@ export default async function MedicineDetailPage({
 
         {/* Mandatory Regulatory Medical Disclaimer */}
         <DisclaimerNotice />
+
+        {/* Dynamic Crowdsourced Availability Section */}
+        <MedicineAvailabilitySection
+          medicineId={medicine.id}
+          medicineName={medicine.brandName}
+          reports={reports}
+          pharmacies={pharmacies}
+          locale={locale}
+        />
 
         {/* Generic Equivalents Section */}
         <section className="space-y-4">

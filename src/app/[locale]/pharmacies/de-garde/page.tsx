@@ -1,9 +1,11 @@
 import React from "react";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { SEED_DUTY_SCHEDULES } from "@/lib/data/mock-dataset";
+import { getAllDutySchedules } from "@/lib/data/repository";
 import { DutyPharmaciesView } from "@/components/pharmacy/DutyPharmaciesView";
 import { HeartPulse, Clock } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Pharmacies de Garde en Tunisie - Nuit & Dimanche",
@@ -18,6 +20,8 @@ interface DutyPageProps {
 export default async function DutyPharmaciesPage({ params }: DutyPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const schedules = await getAllDutySchedules();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -43,7 +47,7 @@ export default async function DutyPharmaciesPage({ params }: DutyPageProps) {
 
       {/* Main Duty View Component */}
       <DutyPharmaciesView
-        initialSchedules={SEED_DUTY_SCHEDULES}
+        initialSchedules={schedules}
         locale={locale}
       />
     </div>

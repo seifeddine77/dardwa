@@ -1,10 +1,12 @@
 import React from "react";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { SEED_PHARMACIES } from "@/lib/data/mock-dataset";
+import { getAllPharmacies } from "@/lib/data/repository";
 import { PharmacyDirectoryView } from "@/components/pharmacy/PharmacyDirectoryView";
 import { Link } from "@/i18n/routing";
 import { HeartPulse, MapPin } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Annuaire des Pharmacies en Tunisie - Coordonnées & Horaires",
@@ -19,6 +21,8 @@ interface PharmaciesPageProps {
 export default async function PharmaciesPage({ params }: PharmaciesPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const pharmacies = await getAllPharmacies();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -57,7 +61,7 @@ export default async function PharmaciesPage({ params }: PharmaciesPageProps) {
 
       {/* Directory & Map View */}
       <PharmacyDirectoryView
-        initialPharmacies={SEED_PHARMACIES}
+        initialPharmacies={pharmacies}
         locale={locale}
       />
     </div>

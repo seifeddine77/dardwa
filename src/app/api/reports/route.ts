@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   createReportSchema,
-  createReport,
   aggregateReports,
-  getAllReports,
 } from "@/features/reports/reports-service";
+import { getActiveReports, addReport } from "@/lib/data/repository";
 import { hashIpAddress, checkRateLimit } from "@/lib/rate-limit";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const reports = getAllReports();
+  const reports = await getActiveReports();
   const summary = aggregateReports(reports, medicineId, pharmacyId);
 
   return NextResponse.json({ summary });
@@ -72,7 +73,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Save Report with 48h TTL
-    const report = createReport({ medicineId, pharmacyId, status, email });
+    const report = await addReport({
+      medicineId,
+      pharmacyId,
+      status,
+      userId: email,
+    });
 
     return NextResponse.json(
       {

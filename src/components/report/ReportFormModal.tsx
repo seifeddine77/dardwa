@@ -12,10 +12,14 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { Medicine, Pharmacy } from "@/types/domain.types";
+
 interface ReportFormModalProps {
   locale: string;
   defaultMedicineId?: string;
   defaultPharmacyId?: string;
+  medicines?: Medicine[];
+  pharmacies?: Pharmacy[];
   onSuccess?: () => void;
 }
 
@@ -23,13 +27,15 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
   locale,
   defaultMedicineId,
   defaultPharmacyId,
+  medicines = SEED_MEDICINES,
+  pharmacies = SEED_PHARMACIES,
   onSuccess,
 }) => {
   const [medicineId, setMedicineId] = useState(
-    defaultMedicineId || SEED_MEDICINES[0].id
+    defaultMedicineId || medicines[0]?.id || ""
   );
   const [pharmacyId, setPharmacyId] = useState(
-    defaultPharmacyId || SEED_PHARMACIES[0].id
+    defaultPharmacyId || pharmacies[0]?.id || ""
   );
   const [status, setStatus] = useState<"available" | "out_of_stock">("available");
   const [email, setEmail] = useState("");
@@ -140,7 +146,7 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
             onChange={(e) => setMedicineId(e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
-            {SEED_MEDICINES.map((med) => (
+            {medicines.map((med) => (
               <option key={med.id} value={med.id}>
                 {med.brandName} ({med.dosage} - {med.form})
               </option>
@@ -159,7 +165,7 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
             onChange={(e) => setPharmacyId(e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
-            {SEED_PHARMACIES.map((pharm) => (
+            {pharmacies.map((pharm) => (
               <option key={pharm.id} value={pharm.id}>
                 {pharm.name} - {pharm.delegation} ({pharm.governorate})
               </option>

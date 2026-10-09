@@ -12,40 +12,79 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-export const DutyManagerView: React.FC<{ locale: string }> = ({ locale }) => {
-  const [schedules, setSchedules] = useState<DutySchedule[]>(
-    SEED_DUTY_SCHEDULES
+import { Pharmacy } from "@/types/domain.types";
+
+interface DutyManagerViewProps {
+  locale: string;
+  initialSchedules?: DutySchedule[];
+  initialPharmacies?: Pharmacy[];
+}
+
+export const DutyManagerView: React.FC<DutyManagerViewProps> = ({
+  locale,
+  initialSchedules = SEED_DUTY_SCHEDULES,
+  initialPharmacies = SEED_PHARMACIES,
+}) => {
+  const [schedules, setSchedules] = useState<DutySchedule[]>(initialSchedules);
+  const [pharmacies] = useState<Pharmacy[]>(initialPharmacies);
+  const [pharmacyId, setPharmacyId] = useState<string>(
+    initialPharmacies[0]?.id || ""
   );
-  const [pharmacyId, setPharmacyId] = useState<string>(SEED_PHARMACIES[0].id);
   const [dutyDate, setDutyDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
   const [dutyType, setDutyType] = useState<DutyType>("night");
   const [notes, setNotes] = useState<string>("Garde de nuit 20h -> 08h");
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleAddDuty = (e: React.FormEvent) => {
+  const handleAddDuty = async (e: React.FormEvent) => {
     e.preventDefault();
-    const pharm = SEED_PHARMACIES.find((p) => p.id === pharmacyId);
+    if (!pharmacyId) return;
+    setIsSubmitting(true);
 
-    const newSchedule: DutySchedule = {
-      id: `duty-${Date.now()}`,
-      pharmacyId,
-      pharmacy: pharm,
-      dutyDate,
-      dutyType,
-      startTime: dutyType === "night" ? "20:00" : "08:00",
-      endTime: dutyType === "night" ? "08:00" : "20:00",
-      notes,
-    };
+    try {
+      const res = await fetch("/api/admin/duty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pharmacyId,
+          dutyDate,
+          dutyType,
+          notes,
+        }),
+      });
 
-    setSchedules([newSchedule, ...schedules]);
-    setFeedback("Nouvelle garde programmée avec succès !");
-    setTimeout(() => setFeedback(null), 3000);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur lors de l'ajout de la garde.");
+      }
+
+      setSchedules([data.schedule, ...schedules]);
+      setFeedback("Nouvelle garde programmée avec succès et persistée en base !");
+      setTimeout(() => setFeedback(null), 4000);
+    } catch (err: any) {
+      setFeedback(err.message || "Erreur réseau.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    setSchedules(schedules.filter((s) => s.id !== id));
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/admin/duty?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Échec de suppression.");
+      }
+      setSchedules(schedules.filter((s) => s.id !== id));
+      setFeedback("Garde retirée du planning.");
+      setTimeout(() => setFeedback(null), 3000);
+    } catch (err: any) {
+      setFeedback(err.message || "Erreur lors de la suppression.");
+    }
   };
 
   return (
@@ -76,7 +115,7 @@ export const DutyManagerView: React.FC<{ locale: string }> = ({ locale }) => {
               onChange={(e) => setPharmacyId(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"
             >
-              {SEED_PHARMACIES.map((p) => (
+              {pharmacies.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} ({p.governorate})
                 </option>
@@ -113,9 +152,10 @@ export const DutyManagerView: React.FC<{ locale: string }> = ({ locale }) => {
           <div>
             <button
               type="submit"
-              className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow-xs"
+              disabled={isSubmitting}
+              className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition shadow-xs"
             >
-              Ajouter au planning
+              {isSubmitting ? "Enregistrement..." : "Ajouter au planning"}
             </button>
           </div>
         </form>

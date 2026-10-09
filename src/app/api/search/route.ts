@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { searchMedicinesInMemory } from "@/features/search/search-service";
-import { SEED_MEDICINES } from "@/lib/data/mock-dataset";
+import { getAllMedicines } from "@/lib/data/repository";
+
+export const dynamic = "force-dynamic";
 
 const searchSchema = z.object({
   q: z.string().trim().min(1).max(100),
@@ -21,9 +23,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const catalog = await getAllMedicines();
   const results = searchMedicinesInMemory(
     validation.data.q,
-    SEED_MEDICINES,
+    catalog,
     validation.data.limit
   );
 

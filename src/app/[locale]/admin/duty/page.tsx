@@ -5,6 +5,10 @@ import { DutyManagerView } from "@/components/admin/DutyManagerView";
 import { HeartPulse, ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/routing";
 
+import { getAllDutySchedules, getAllPharmacies } from "@/lib/data/repository";
+
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Gestion des Gardes - Back-office Administrateur | DarDwa",
   robots: "noindex, nofollow",
@@ -17,6 +21,11 @@ interface AdminDutyPageProps {
 export default async function AdminDutyPage({ params }: AdminDutyPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const [schedules, pharmacies] = await Promise.all([
+    getAllDutySchedules(),
+    getAllPharmacies(),
+  ]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -45,7 +54,11 @@ export default async function AdminDutyPage({ params }: AdminDutyPageProps) {
         </p>
       </div>
 
-      <DutyManagerView locale={locale} />
+      <DutyManagerView
+        locale={locale}
+        initialSchedules={schedules}
+        initialPharmacies={pharmacies}
+      />
     </div>
   );
 }

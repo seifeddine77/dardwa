@@ -32,6 +32,9 @@ export const CsvImportView: React.FC<{ locale: string }> = ({ locale }) => {
   const [csvContent, setCsvContent] = useState<string>(SAMPLE_MEDICINE_CSV);
   const [validationResult, setValidationResult] = useState<any | null>(null);
   const [isImported, setIsImported] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const handleTypeChange = (type: "medicines" | "pharmacies") => {
     setImportType(type);
@@ -40,10 +43,14 @@ export const CsvImportView: React.FC<{ locale: string }> = ({ locale }) => {
     );
     setValidationResult(null);
     setIsImported(false);
+    setImportMessage(null);
+    setImportError(null);
   };
 
   const handleValidate = () => {
     setIsImported(false);
+    setImportMessage(null);
+    setImportError(null);
     if (importType === "medicines") {
       const result = validateMedicineCsv(csvContent);
       setValidationResult(result);
@@ -53,8 +60,33 @@ export const CsvImportView: React.FC<{ locale: string }> = ({ locale }) => {
     }
   };
 
-  const handleConfirmImport = () => {
-    setIsImported(true);
+  const handleConfirmImport = async () => {
+    if (!validationResult || validationResult.rows.length === 0) return;
+    setIsSubmitting(true);
+    setImportError(null);
+
+    try {
+      const res = await fetch("/api/admin/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: importType,
+          rows: validationResult.rows,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur lors de l'importation.");
+      }
+
+      setIsImported(true);
+      setImportMessage(data.message);
+    } catch (err: any) {
+      setImportError(err.message || "Erreur réseau.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -153,20 +185,46 @@ export const CsvImportView: React.FC<{ locale: string }> = ({ locale }) => {
               <button
                 type="button"
                 onClick={handleConfirmImport}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-2"
+                disabled={isSubmitting}
+                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white text-xs font-bold rounded-xl transition shadow-xs flex items-center gap-2"
               >
                 <Database className="h-4 w-4 text-emerald-400" />
-                <span>Confirmer l&apos;importation en base</span>
+                <span>
+                  {isSubmitting
+                    ? "Importation en cours..."
+                    : "Confirmer l'importation en base"}
+                </span>
               </button>
             )}
           </div>
 
+          {importError && (
+            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bold flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-rose-600 shrink-0" />
+              <span>{importError}</span>
+            </div>
+          )}
+
           {isImported && (
-            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <span>
-                Importation réussie ! {validationResult.rows.length} entrée(s) synchronisée(s) avec succès.
-              </span>
+            <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                <span>
+                  {importMessage ||
+                    `Importation réussie ! ${validationResult.rows.length} entrée(s) synchronisée(s) avec succès.`}
+                </span>
+              </div>
+              <a
+                href={importType === "medicines" ? `/${locale}/medicines` : `/${locale}/pharmacies`}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shrink-0"
+              >
+                <span>
+                  {importType === "medicines"
+                    ? "Voir dans le catalogue"
+                    : "Voir sur la carte"}
+                </span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </a>
             </div>
           )}
 

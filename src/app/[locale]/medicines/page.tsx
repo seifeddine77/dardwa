@@ -2,12 +2,13 @@ import React from "react";
 import { setRequestLocale } from "next-intl/server";
 import { useTranslations } from "next-intl";
 import { Metadata } from "next";
-import { SEED_MEDICINES } from "@/lib/data/mock-dataset";
-import { searchMedicinesInMemory } from "@/features/search/search-service";
+import { getAllMedicines } from "@/lib/data/repository";
 import { MedicineCard } from "@/components/medicine/MedicineCard";
 import { MedicineAutocomplete } from "@/components/search/MedicineAutocomplete";
 import { DisclaimerNotice } from "@/components/medicine/DisclaimerNotice";
 import { Pill, Filter } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Répertoire des Médicaments et Génériques en Tunisie",
@@ -28,19 +29,12 @@ export default async function MedicinesPage({
   const { q, filter } = await searchParams;
   setRequestLocale(locale);
 
-  // Retrieve medicines based on query or return catalog
-  let medicines = SEED_MEDICINES;
-  if (q && q.trim().length > 0) {
-    const hits = searchMedicinesInMemory(q.trim(), SEED_MEDICINES, 50);
-    medicines = hits.map((h) => h.medicine);
-  }
-
-  // Apply filters
-  if (filter === "generic") {
-    medicines = medicines.filter((m) => m.isGeneric);
-  } else if (filter === "cnam") {
-    medicines = medicines.filter((m) => m.cnamCovered);
-  }
+  // Retrieve medicines dynamically from repository
+  const medicines = await getAllMedicines({
+    q: q?.trim(),
+    genericOnly: filter === "generic",
+    cnamOnly: filter === "cnam",
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">

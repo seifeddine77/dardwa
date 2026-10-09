@@ -3,11 +3,11 @@ import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
 import { Link } from "@/i18n/routing";
 import {
-  SEED_MEDICINES,
-  SEED_PHARMACIES,
-  SEED_DUTY_SCHEDULES,
-} from "@/lib/data/mock-dataset";
-import { getAllReports } from "@/features/reports/reports-service";
+  getAllMedicines,
+  getAllPharmacies,
+  getAllDutySchedules,
+  getAllReports,
+} from "@/lib/data/repository";
 import {
   ShieldCheck,
   FileSpreadsheet,
@@ -18,6 +18,8 @@ import {
   ArrowRight,
   Database,
 } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Tableau de Bord Administrateur - DarDwa",
@@ -34,10 +36,17 @@ export default async function AdminDashboardPage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const medicinesCount = SEED_MEDICINES.length;
-  const pharmaciesCount = SEED_PHARMACIES.length;
-  const dutyCount = SEED_DUTY_SCHEDULES.length;
-  const reportsCount = getAllReports().length;
+  const [medicines, pharmacies, dutySchedules, reports] = await Promise.all([
+    getAllMedicines(),
+    getAllPharmacies(),
+    getAllDutySchedules(),
+    getAllReports(),
+  ]);
+
+  const medicinesCount = medicines.length;
+  const pharmaciesCount = pharmacies.length;
+  const dutyCount = dutySchedules.length;
+  const reportsCount = reports.length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
