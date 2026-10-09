@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <rect width="100" height="100" rx="24" fill="#059669" />
+  <!-- Capsule Pill Design -->
+  <g transform="translate(50, 50) rotate(-45) translate(-50, -50)">
+    <!-- Top Half (White) -->
+    <path d="M 32 50 C 32 38, 40 30, 50 30 C 60 30, 68 38, 68 50 Z" fill="#ffffff" />
+    <!-- Bottom Half (Emerald Accent) -->
+    <path d="M 32 50 C 32 62, 40 70, 50 70 C 60 70, 68 62, 68 50 Z" fill="#34d399" />
+    <!-- Dividing line -->
+    <line x1="32" y1="50" x2="68" y2="50" stroke="#047857" stroke-width="2" />
+  </g>
+  <!-- Small Star/Crescent Accent symbolizing Tunisia / Care -->
+  <circle cx="72" cy="28" r="5" fill="#fef08a" />
+</svg>
