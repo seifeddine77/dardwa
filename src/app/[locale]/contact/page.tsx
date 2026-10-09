@@ -1,7 +1,10 @@
 import React from "react";
 import { setRequestLocale } from "next-intl/server";
 import { Metadata } from "next";
-import { Mail, MessageSquare, Send, CheckCircle2 } from "lucide-react";
+import { ContactForm } from "@/components/contact/ContactForm";
+import { Mail } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Contact & Assistance - DarDwa (دار الدواء)",
@@ -31,42 +34,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
       </div>
 
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700">Votre nom</label>
-            <input
-              type="text"
-              placeholder="Mohamed Ben Ali"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700">Adresse email</label>
-            <input
-              type="email"
-              placeholder="contact@exemple.tn"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-700">Message</label>
-            <textarea
-              rows={5}
-              placeholder="Votre message..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          <button
-            type="button"
-            className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-xs"
-          >
-            <Send className="h-4 w-4" />
-            <span>Envoyer le message</span>
-          </button>
-        </div>
+        <ContactForm locale={locale} />
 
         <div className="pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-500">
           <Mail className="h-4 w-4 text-emerald-600" />

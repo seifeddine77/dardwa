@@ -6,6 +6,7 @@ export const createReportSchema = z.object({
   pharmacyId: z.string().uuid("Identifiant pharmacie invalide"),
   status: z.enum(["available", "out_of_stock"]),
   email: z.string().email("Adresse email invalide").optional(),
+  pharmacistLicenceNumber: z.string().max(50).optional(),
   // Honeypot field: must remain empty, bots will fill it
   website: z.string().max(0, "Honeypot trigger").optional().default(""),
 });

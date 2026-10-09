@@ -67,6 +67,19 @@ export const Header: React.FC = () => {
             >
               {t("report")}
             </Link>
+            <Link
+              href="/solidarity"
+              className="text-sm font-semibold text-slate-700 hover:text-brand-600 transition"
+            >
+              {locale === "ar" ? "تضامن" : "Solidarité"}
+            </Link>
+            <Link
+              href="/admin"
+              className="text-xs font-bold text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-lg transition"
+              title="Back-office Administrateur"
+            >
+              Admin
+            </Link>
           </nav>
 
           {/* Right actions: Language Switcher */}
@@ -155,6 +168,20 @@ export const Header: React.FC = () => {
             className="block text-base font-medium text-slate-700 hover:text-brand-600"
           >
             {t("report")}
+          </Link>
+          <Link
+            href="/solidarity"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-base font-medium text-slate-700 hover:text-brand-600"
+          >
+            {locale === "ar" ? "التضامن والمجتمع" : "Solidarité & Collecte"}
+          </Link>
+          <Link
+            href="/admin"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-base font-bold text-slate-800 hover:text-brand-600 pt-2 border-t border-slate-100"
+          >
+            Administration
           </Link>
         </div>
       )}

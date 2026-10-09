@@ -39,7 +39,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { medicineId, pharmacyId, status, email, website } = validation.data;
+    const {
+      medicineId,
+      pharmacyId,
+      status,
+      email,
+      website,
+      pharmacistLicenceNumber,
+    } = validation.data;
 
     // 2. Anti-Spam Honeypot check
     // If the hidden website honeypot field is filled, silently ignore (trap for bots)
@@ -73,11 +80,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Save Report with 48h TTL
+    const isPharmacistVerified = Boolean(
+      pharmacistLicenceNumber && pharmacistLicenceNumber.trim().length >= 4
+    );
+
     const report = await addReport({
       medicineId,
       pharmacyId,
       status,
       userId: email,
+      isPharmacistVerified,
+      pharmacistLicenceNumber: isPharmacistVerified ? pharmacistLicenceNumber : undefined,
     });
 
     return NextResponse.json(

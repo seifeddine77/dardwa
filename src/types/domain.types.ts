@@ -100,6 +100,8 @@ export interface AvailabilityReport {
   status: ReportStatus;
   userId?: string;
   moderationStatus: ModerationStatus;
+  isPharmacistVerified?: boolean;
+  pharmacistLicenceNumber?: string;
   createdAt: string;
   expiresAt: string;
 }

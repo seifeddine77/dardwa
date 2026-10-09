@@ -118,7 +118,7 @@ export async function insertMedicines(
   const created: Medicine[] = [];
 
   for (const item of newItems) {
-    const id = item.id || `med-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const id = item.id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `d${Date.now()}00-0000-0000-0000-000000000001`);
     const existingIdx = store.medicines.findIndex(
       (m) => m.code.toLowerCase() === item.code.toLowerCase()
     );
@@ -187,7 +187,7 @@ export async function insertPharmacies(
   const created: Pharmacy[] = [];
 
   for (const item of newItems) {
-    const id = item.id || `pharm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const id = item.id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `e${Date.now()}00-0000-0000-0000-000000000001`);
     const fullItem: Pharmacy = {
       ...item,
       id,
@@ -281,6 +281,8 @@ export async function addReport(report: {
   pharmacyId: string;
   status: ReportStatus;
   userId?: string;
+  isPharmacistVerified?: boolean;
+  pharmacistLicenceNumber?: string;
 }): Promise<AvailabilityReport> {
   const store = getStore();
   const now = new Date();
@@ -293,6 +295,8 @@ export async function addReport(report: {
     status: report.status,
     userId: report.userId,
     moderationStatus: "approved",
+    isPharmacistVerified: report.isPharmacistVerified || false,
+    pharmacistLicenceNumber: report.pharmacistLicenceNumber,
     createdAt: now.toISOString(),
     expiresAt: expiresAt.toISOString(),
   };

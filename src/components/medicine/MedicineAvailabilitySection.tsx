@@ -145,9 +145,17 @@ export const MedicineAvailabilitySection: React.FC<
                 >
                   <div className="flex items-center gap-2.5">
                     <Building className="h-4 w-4 text-slate-400" />
-                    <span className="font-bold text-slate-900">
-                      {pharm ? `${pharm.name} (${pharm.governorate})` : "Pharmacie"}
-                    </span>
+                    <div>
+                      <span className="font-bold text-slate-900 block">
+                        {pharm ? `${pharm.name} (${pharm.governorate})` : "Pharmacie"}
+                      </span>
+                      {r.isPharmacistVerified && (
+                        <span className="text-[10px] font-bold text-emerald-700 inline-flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                          Officine vérifiée (CNOP #{r.pharmacistLicenceNumber || "Agréé"})
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-slate-400 text-[11px] font-mono">

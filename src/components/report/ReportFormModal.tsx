@@ -39,6 +39,8 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
   );
   const [status, setStatus] = useState<"available" | "out_of_stock">("available");
   const [email, setEmail] = useState("");
+  const [isPharmacistMode, setIsPharmacistMode] = useState(false);
+  const [pharmacistLicenceNumber, setPharmacistLicenceNumber] = useState("");
   const [websiteHoneypot, setWebsiteHoneypot] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(
@@ -59,6 +61,9 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
           pharmacyId,
           status,
           email: email.trim() || undefined,
+          pharmacistLicenceNumber: isPharmacistMode
+            ? pharmacistLicenceNumber.trim()
+            : undefined,
           website: websiteHoneypot, // Honeypot
         }),
       });
@@ -221,6 +226,43 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
             placeholder="exemple@domaine.tn"
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
+        </div>
+
+        {/* Pharmacist Verification Toggle */}
+        <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-800">
+            <input
+              type="checkbox"
+              checked={isPharmacistMode}
+              onChange={(e) => setIsPharmacistMode(e.target.checked)}
+              className="h-4 w-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300"
+            />
+            <span>
+              {locale === "ar"
+                ? "أنا صيدلي مرخص (تحديث رسمي للأوفيسين)"
+                : "Je suis pharmacien titulaire (mise à jour officielle officine)"}
+            </span>
+          </label>
+
+          {isPharmacistMode && (
+            <div className="pt-2 border-t border-slate-200/80 space-y-1">
+              <label className="text-[11px] font-bold text-slate-600 block">
+                {locale === "ar"
+                  ? "رقم التسجيل في عمادة الصيادلة (CNOP)"
+                  : "Numéro d'inscription au Conseil de l'Ordre (CNOP)"}
+              </label>
+              <input
+                type="text"
+                value={pharmacistLicenceNumber}
+                onChange={(e) => setPharmacistLicenceNumber(e.target.value)}
+                placeholder="ex: 14892"
+                className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <span className="text-[10px] text-emerald-700 font-semibold block">
+                Votre signalement portera le badge officiel « Officine vérifiée ».
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Security & Privacy Notice */}

@@ -54,6 +54,26 @@ export const Footer: React.FC = () => {
                   {tNav("report")}
                 </Link>
               </li>
+              <li>
+                <Link href="/solidarity" className="hover:text-white transition">
+                  Solidarité & Collecte
+                </Link>
+              </li>
+              <li>
+                <Link href="/how-data-is-sourced" className="hover:text-white transition">
+                  Origine des données (PCT)
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-white transition">
+                  À propos du projet
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition">
+                  Contact & Assistance
+                </Link>
+              </li>
             </ul>
           </div>
 
