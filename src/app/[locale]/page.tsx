@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { DisclaimerNotice } from "@/components/medicine/DisclaimerNotice";
 import { MedicineAutocomplete } from "@/components/search/MedicineAutocomplete";
+import { MedicineBoxScannerModal } from "@/components/search/MedicineBoxScannerModal";
 import {
   HeartPulse,
   Coins,
@@ -50,11 +51,15 @@ function HomeContent({ locale }: { locale: string }) {
           </p>
 
           {/* Instant Typo-Tolerant Autocomplete Search */}
-          <div className="pt-2">
+          <div className="pt-2 space-y-3">
             <MedicineAutocomplete autoFocus />
-            <p className="text-xs text-slate-500 mt-2.5 text-center">
-              Recherchez par nom commercial (ex: <span className="font-semibold text-slate-700">Doliprane</span>) ou DCI (ex: <span className="font-semibold text-slate-700">Paracétamol</span>, <span className="font-semibold text-slate-700">أموكسيسيلين</span>)
-            </p>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <MedicineBoxScannerModal locale={locale} />
+              <span className="text-xs text-slate-400 hidden sm:inline">•</span>
+              <p className="text-xs text-slate-500 text-center">
+                Recherchez par nom commercial (ex: <span className="font-semibold text-slate-700">Doliprane</span>) ou DCI (ex: <span className="font-semibold text-slate-700">Paracétamol</span>, <span className="font-semibold text-slate-700">أموكسيسيلين</span>)
+              </p>
+            </div>
           </div>
 
           {/* Quick Duty Pharmacy Banner */}
